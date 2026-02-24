@@ -1,0 +1,40 @@
+From cfe2fb55e458f82ae67b84d264b3100c69f25c37 Mon Sep 17 00:00:00 2001
+From: felixlionardo <flionardo@blackberry.com>
+Date: Fri, 7 Nov 2025 11:07:57 -0500
+Subject: [PATCH] Fix shutdown and restart
+
+---
+ plugins/actions/actions.c | 10 +++++++++-
+ 1 file changed, 9 insertions(+), 1 deletion(-)
+
+diff --git a/plugins/actions/actions.c b/plugins/actions/actions.c
+index 3e2de052..fe150a78 100644
+--- a/plugins/actions/actions.c
++++ b/plugins/actions/actions.c
+@@ -902,6 +902,14 @@ actions_plugin_action_dbus_xfsm (ActionsPlugin *plugin,
+                                  gboolean allow_save,
+                                  GError **error)
+ {
++#ifdef __QNX__
++  /* On QNX, force use of direct commands for Restart/Shutdown */
++  if (g_strcmp0 (method, "Restart") == 0)
++    return g_spawn_command_line_async ("sudo /usr/bin/shutdown -S reboot", error);
++  if (g_strcmp0 (method, "Shutdown") == 0)
++    return g_spawn_command_line_async ("sudo /usr/bin/shutdown -S system", error);
++#endif
++
+   if (G_LIKELY (plugin->proxy != NULL))
+     {
+       GVariant *retval = NULL;
+@@ -1020,7 +1028,7 @@ actions_plugin_actions_allowed (ActionsPlugin *plugin)
+ 
+   if (G_LIKELY (plugin->proxy != NULL))
+     {
+-      PANEL_SET_FLAG (allow_mask, ACTION_TYPE_LOGOUT | ACTION_TYPE_LOGOUT_DIALOG | ACTION_TYPE_SWITCH_USER);
++      PANEL_SET_FLAG (allow_mask, ACTION_TYPE_LOGOUT | ACTION_TYPE_LOGOUT_DIALOG | ACTION_TYPE_SWITCH_USER | ACTION_TYPE_SHUTDOWN | ACTION_TYPE_RESTART);
+ 
+       if (actions_plugin_action_dbus_can (plugin->proxy, "CanShutdown"))
+         PANEL_SET_FLAG (allow_mask, ACTION_TYPE_SHUTDOWN);
+-- 
+2.51.1
+
