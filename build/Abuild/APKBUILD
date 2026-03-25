@@ -2,7 +2,7 @@
 # QNX Maintainer: Felix Xing <fxing@qnx.com>
 pkgname=xfce4-panel
 pkgver=4.21.0
-pkgrel=${pkgrel:-0}
+pkgrel=1
 pkgdesc="Panel for the Xfce desktop environment"
 url="https://xfce.org/"
 arch="all"
@@ -42,7 +42,6 @@ package() {
 }
 
 
-options="$options ${DISABLE_CHECK:+!check}"
 sha512sums="
 64e848af99eb6d11676819ee96b97bf49db7054d12d688177e0f21d9af74cecf3d14a102c01198a2e901568e848149d2c8e9bdb5489a5ddddb8150a78c6f53a6  xfce4-panel-4.21.0.tar.xz
 9886471c17cca4ebe6281ac4366fd9799c49f31fe0192147de2b8f70e95026fbe9ac916fb5937580f84eb956300f19a13ba66bbe44ebf15b2156e9df2330c800  0001-Fix-shutdown-and-restart.patch
